@@ -54,9 +54,9 @@ export const useAuth = () => {
       const response = await authService.login({ phone: username, password })
       if (response.success && response.data) {
         // 处理后端返回的数据结构
-        const { user, token, refreshToken, tokens } = response.data
-        const accessToken = token || tokens?.accessToken
-        const refreshTokenValue = refreshToken || tokens?.refreshToken
+        const { user, tokens } = response.data
+        const accessToken = tokens?.accessToken
+        const refreshTokenValue = tokens?.refreshToken
         
         if (user && accessToken) {
           login(user, accessToken, refreshTokenValue)
@@ -79,9 +79,9 @@ export const useAuth = () => {
       const response = await authService.register(userData)
       if (response.success && response.data) {
         // 处理后端返回的数据结构
-        const { user, token, refreshToken, tokens } = response.data
-        const accessToken = token || tokens?.accessToken
-        const refreshTokenValue = refreshToken || tokens?.refreshToken
+        const { user, tokens } = response.data
+        const accessToken = tokens?.accessToken
+        const refreshTokenValue = tokens?.refreshToken
         
         if (user && accessToken) {
           login(user, accessToken, refreshTokenValue)
