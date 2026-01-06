@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>大学生情绪盲盒交换站</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body class="bg-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+      <header class="bg-white rounded-lg shadow-md p-6 mb-8">
+        <h1 class="text-3xl font-bold text-blue-600 text-center">大学生情绪盲盒交换站</h1>
+        <p class="text-center text-gray-600 mt-2">一个温暖的匿名情绪互助平台</p>
+      </header>
+
+      <main class="bg-white rounded-lg shadow-md p-6">
+        <section id="auth-section" class="max-w-md mx-auto">
+          <!-- 角色选择 -->
+          <div class="mb-6 bg-blue-50 p-4 rounded-lg">
+            <h3 class="text-center font-medium text-blue-800 mb-3">请选择您的身份</h3>
+            <div class="flex space-x-4">
+              <button id="user-role-btn" class="flex-1 py-2 px-4 bg-white text-blue-600 rounded-lg border-2 border-blue-600 font-medium">
+                普通用户
+              </button>
+              <button id="admin-role-btn" class="flex-1 py-2 px-4 bg-white text-gray-600 rounded-lg border-2 border-gray-300 font-medium">
+                管理员
+              </button>
+            </div>
+          </div>
+          
+          <div class="mb-4 flex border-b">
+            <button id="login-tab" class="px-4 py-2 text-blue-600 border-b-2 border-blue-600 font-medium">登录</button>
+            <button id="register-tab" class="px-4 py-2 text-gray-500 hover:text-gray-700 font-medium">注册</button>
+          </div>
+          
+          <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
+          <div id="success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"></div>
+          
+          <!-- 登录表单 -->
+          <form id="login-form" class="space-y-4">
+            <div>
+              <label for="username" class="block text-sm font-medium text-gray-700 mb-1">用户名/手机号</label>
+              <input type="text" id="username" name="username" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请输入用户名或手机号" required>
+            </div>
+            
+            <div>
+              <label for="password" class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+              <input type="password" id="password" name="password" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请输入密码" required>
+            </div>
+            
+            <div>
+              <button type="submit" id="login-btn" 
+                      class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors">
+                登录
+              </button>
+            </div>
+            
+            <div class="mt-4 text-sm text-center">
+              <p>管理员账号：admin / admin123</p>
+              <p>或者使用手机号：13800000000 / admin123</p>
+            </div>
+          </form>
+          
+          <!-- 注册表单 -->
+          <form id="register-form" class="hidden space-y-4">
+            <div>
+              <label for="reg-username" class="block text-sm font-medium text-gray-700 mb-1">用户名</label>
+              <input type="text" id="reg-username" name="username" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请输入用户名" required>
+            </div>
+            
+            <div>
+              <label for="reg-phone" class="block text-sm font-medium text-gray-700 mb-1">手机号</label>
+              <input type="text" id="reg-phone" name="phone" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请输入手机号" required>
+            </div>
+            
+            <div>
+              <label for="reg-studentId" class="block text-sm font-medium text-gray-700 mb-1">学号（可选）</label>
+              <input type="text" id="reg-studentId" name="studentId" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请输入学号">
+            </div>
+            
+            <div>
+              <label for="reg-school" class="block text-sm font-medium text-gray-700 mb-1">学校</label>
+              <input type="text" id="reg-school" name="school" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请输入学校" required>
+            </div>
+            
+            <div>
+              <label for="reg-grade" class="block text-sm font-medium text-gray-700 mb-1">年级</label>
+              <input type="text" id="reg-grade" name="grade" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请输入年级" required>
+            </div>
+            
+            <div>
+              <label for="reg-password" class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+              <input type="password" id="reg-password" name="password" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请输入密码" required>
+            </div>
+            
+            <div>
+              <label for="reg-confirm-password" class="block text-sm font-medium text-gray-700 mb-1">确认密码</label>
+              <input type="password" id="reg-confirm-password" name="confirmPassword" 
+                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                     placeholder="请再次输入密码" required>
+            </div>
+            
+            <div>
+              <button type="submit" id="register-btn" 
+                      class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition-colors">
+                注册
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <section id="welcome-section" class="hidden">
+          <h2 class="text-xl font-semibold mb-4">欢迎来到情绪盲盒交换站</h2>
+          <p class="mb-6">您已成功登录！</p>
+          
+          <div id="user-info" class="bg-gray-50 p-4 rounded-lg mb-4"></div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div id="draw-box" class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <h3 class="text-lg font-medium text-gray-900 mb-2">随机抽取盲盒</h3>
+              <p class="text-gray-600">获取他人分享的情绪盲盒，送上温暖回复</p>
+            </div>
+            
+            <div id="share-emotion" class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <h3 class="text-lg font-medium text-gray-900 mb-2">分享情绪</h3>
+              <p class="text-gray-600">创建自己的情绪盲盒，分享您的感受</p>
+            </div>
+            
+            <div id="personal-center" class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+              <h3 class="text-lg font-medium text-gray-900 mb-2">个人中心</h3>
+              <p class="text-gray-600">查看自己的盲盒、回复和点赞记录</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+  <script>
+    // 动态获取API基础URL，支持本地网络访问
+    const API_BASE = window.location.origin.includes('localhost') 
+      ? 'http://localhost:3001' 
+      : `${window.location.protocol}//${window.location.hostname}:3001`;
+    
+    console.log('API_BASE:', API_BASE);
+    let authToken = '';
+    let currentUser = null;
+    
+    // 认证相关元素
+    const authSection = document.getElementById('auth-section');
+    const userRoleBtn = document.getElementById('user-role-btn');
+    const adminRoleBtn = document.getElementById('admin-role-btn');
+    const loginTab = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const errorMessage = document.getElementById('error-message');
+    const successMessage = document.getElementById('success-message');
+    const welcomeSection = document.getElementById('welcome-section');
+    
+    // 当前选择的角色
+    let currentRole = 'user'; // 'user' 或 'admin'
+    
+    // 功能区域
+    const drawBoxBtn = document.getElementById('draw-box');
+    const shareEmotionBtn = document.getElementById('share-emotion');
+    const personalCenterBtn = document.getElementById('personal-center');
+    
+    // 用户信息显示
+    const userInfo = document.getElementById('user-info');
+    
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.remove('hidden');
+      successMessage.classList.add('hidden');
+      
+      setTimeout(() => {
+        errorMessage.classList.add('hidden');
+      }, 5000);
+    }
+    
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successMessage.classList.remove('hidden');
+      errorMessage.classList.add('hidden');
+      
+      setTimeout(() => {
+        successMessage.classList.add('hidden');
+      }, 3000);
+    }
+    
+    // 角色切换
+    userRoleBtn.addEventListener('click', () => {
+      currentRole = 'user';
+      userRoleBtn.classList.add('text-blue-600', 'border-blue-600');
+      userRoleBtn.classList.remove('text-gray-600', 'border-gray-300');
+      adminRoleBtn.classList.add('text-gray-600', 'border-gray-300');
+      adminRoleBtn.classList.remove('text-blue-600', 'border-blue-600');
+    });
+    
+    adminRoleBtn.addEventListener('click', () => {
+      currentRole = 'admin';
+      adminRoleBtn.classList.add('text-blue-600', 'border-blue-600');
+      adminRoleBtn.classList.remove('text-gray-600', 'border-gray-300');
+      userRoleBtn.classList.add('text-gray-600', 'border-gray-300');
+      userRoleBtn.classList.remove('text-blue-600', 'border-blue-600');
+    });
+    
+    // 标签页切换
+    loginTab.addEventListener('click', () => {
+      loginTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+      loginTab.classList.remove('text-gray-500');
+      registerTab.classList.add('text-gray-500');
+      registerTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+      
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+    });
+    
+    registerTab.addEventListener('click', () => {
+      registerTab.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+      registerTab.classList.remove('text-gray-500');
+      loginTab.classList.add('text-gray-500');
+      loginTab.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+      
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+    });
+    
+    // 注册处理
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('reg-username').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const studentId = document.getElementById('reg-studentId').value.trim();
+      const school = document.getElementById('reg-school').value.trim();
+      const grade = document.getElementById('reg-grade').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+      
+      console.log('注册表单数据:', { username, phone, studentId, school, grade, role: currentRole, hasPassword: !!password });
+      
+      // 基本验证
+      if (!username) {
+        showError('请输入用户名');
+        return;
+      }
+      
+      if (!phone) {
+        showError('请输入手机号');
+        return;
+      }
+      
+      if (!school) {
+        showError('请输入学校');
+        return;
+      }
+      
+      if (!grade) {
+        showError('请输入年级');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showError('两次输入的密码不一致');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showError('密码长度至少6位');
+        return;
+      }
+      
+      registerBtn.textContent = '注册中...';
+      registerBtn.disabled = true;
+      
+      try {
+        console.log('发送注册请求...');
+        const response = await axios.post(`${API_BASE}/api/auth/register`, {
+          username,
+          phone,
+          studentId: studentId || undefined,
+          school,
+          grade,
+          password,
+          isAnonymous: true, // 添加匿名标志
+          anonymousName: `${username}_匿名`, // 添加匿名昵称
+          role: currentRole // 添加角色字段
+        });
+        
+        console.log('注册响应:', response.data);
+        
+        if (response.data.success) {
+          // 注册成功，显示欢迎页面
+          showSuccess('注册成功！');
+          setTimeout(() => {
+            authSection.classList.add('hidden');
+            welcomeSection.classList.remove('hidden');
+            
+            // 保存token和用户信息
+            authToken = response.data.data.tokens.accessToken;
+            currentUser = response.data.data.user;
+            localStorage.setItem('token', authToken);
+            
+            // 如果是管理员，直接跳转到管理后台
+            if (currentUser.role === 'admin') {
+              window.location.href = '/admin.html';
+              return;
+            }
+            
+            // 显示用户信息
+            userInfo.innerHTML = `
+              <p><strong>用户名:</strong> ${currentUser.username}</p>
+              <p><strong>匿名昵称:</strong> ${currentUser.anonymousName}</p>
+              <p><strong>学校:</strong> ${currentUser.school || '未填写'}</p>
+              <p class="mt-2"><a href="/admin.html" class="text-blue-600 hover:text-blue-800">进入管理后台</a></p>
+            `;
+          }, 1000);
+        } else {
+          showError(response.data.message || '注册失败');
+        }
+      } catch (error) {
+        console.error('注册错误:', error);
+        const errorMessage = error.response?.data?.message || error.message || '注册失败，请重试';
+        showError(errorMessage);
+      }
+      
+      registerBtn.textContent = '注册';
+      registerBtn.disabled = false;
+    });
+    
+    // 登录处理
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      loginBtn.textContent = '登录中...';
+      loginBtn.disabled = true;
+      
+      try {
+        const response = await axios.post(`${API_BASE}/api/auth/login`, {
+          phone: username,  // 使用phone字段，但实际可以是用户名
+          password: password,
+          role: currentRole  // 添加角色字段
+        });
+        
+        if (response.data.success) {
+          // 检查是否为管理员
+          if (response.data.data.user.role === 'admin') {
+            // 管理员登录，跳转到管理后台
+            authToken = response.data.data.tokens.accessToken;
+            localStorage.setItem('token', authToken);
+            window.location.href = '/admin.html';
+            return;
+          }
+          
+          // 普通用户登录，显示欢迎页面
+          showSuccess('登录成功！');
+          setTimeout(() => {
+            authSection.classList.add('hidden');
+            welcomeSection.classList.remove('hidden');
+            
+            // 保存token和用户信息
+            authToken = response.data.data.tokens.accessToken;
+            currentUser = response.data.data.user;
+            localStorage.setItem('token', authToken);
+            
+            // 显示用户信息
+            userInfo.innerHTML = `
+              <p><strong>用户名:</strong> ${currentUser.username}</p>
+              <p><strong>匿名昵称:</strong> ${currentUser.anonymousName}</p>
+              <p><strong>学校:</strong> ${currentUser.school || '未填写'}</p>
+              ${currentUser.role === 'admin' ? '<p class="mt-2"><a href="/admin" class="text-blue-600 hover:text-blue-800">进入管理后台</a></p>' : ''}
+            `;
+          }, 1000);
+        } else {
+          showError(response.data.message || '登录失败');
+        }
+      } catch (error) {
+        console.error('登录错误:', error);
+        const errorMessage = error.response?.data?.message || error.message || '网络错误，请检查后端服务是否运行';
+        showError(`登录失败: ${errorMessage}`);
+      }
+      
+      loginBtn.textContent = '登录';
+      loginBtn.disabled = false;
+    });
+    
+    // 功能按钮点击事件
+    drawBoxBtn?.addEventListener('click', () => {
+      // 抽取盲盒功能
+      showSuccess('盲盒功能开发中...');
+    });
+    
+    shareEmotionBtn?.addEventListener('click', () => {
+      // 分享情绪功能
+      showSuccess('分享功能开发中...');
+    });
+    
+    personalCenterBtn?.addEventListener('click', () => {
+      // 个人中心功能
+      showSuccess('个人中心功能开发中...');
+    });
+  </script>
+</body>
+</html>

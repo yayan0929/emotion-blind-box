@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>前端测试</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body class="bg-blue-50 min-h-screen p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-2xl font-bold text-center mb-8">前端连接测试</h1>
+    
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+      <h2 class="text-lg font-medium mb-4">API 连接测试</h2>
+      <div class="space-y-4">
+        <button id="test-health" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">测试健康检查</button>
+        <div id="health-result" class="mt-2 p-2 rounded hidden"></div>
+        
+        <button id="test-login" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">测试登录</button>
+        <div id="login-result" class="mt-2 p-2 rounded hidden"></div>
+      </div>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h2 class="text-lg font-medium mb-4">React 应用加载测试</h2>
+      <p>如果这个页面可以正常显示，但 http://localhost:5173 显示空白，则可能是 React 应用加载问题。</p>
+      <p>请检查浏览器控制台（F12）中的错误信息。</p>
+    </div>
+  </div>
+
+  <script>
+    // 动态获取API基础URL，支持本地网络访问
+    const API_BASE = window.location.origin.includes('localhost') 
+      ? '/api' 
+      : `${window.location.protocol}//${window.location.hostname}:3001/api`;
+    
+    function showResult(elementId, message, isError = false) {
+      const element = document.getElementById(elementId);
+      element.textContent = message;
+      element.className = `mt-2 p-2 rounded ${isError ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+      element.classList.remove('hidden');
+    }
+    
+    // 测试健康检查
+    document.getElementById('test-health').addEventListener('click', async () => {
+      try {
+        // 尝试直接后端API
+        const directResponse = await fetch('http://localhost:3001/health');
+        const directData = await directResponse.json();
+        showResult('health-result', `直接API连接成功: ${directData.message}`);
+        
+        // 尝试代理API
+        const proxyResponse = await fetch('/api/health');
+        console.log('代理API响应:', proxyResponse);
+        
+        if (!proxyResponse.ok) {
+          const errorText = await proxyResponse.text();
+          showResult('health-result', `代理API响应: ${errorText}`, true);
+        } else {
+          const proxyData = await proxyResponse.json();
+          showResult('health-result', `代理API连接成功: ${proxyData.message}`);
+        }
+      } catch (error) {
+        showResult('health-result', `连接失败: ${error.message}`, true);
+      }
+    });
+    
+    // 测试登录
+    document.getElementById('test-login').addEventListener('click', async () => {
+      try {
+        // 尝试直接后端API
+        const directResponse = await axios.post('http://localhost:3001/api/auth/login', {
+          phone: '13800138000',
+          password: '123456'
+        });
+        showResult('login-result', `直接API登录成功: ${directResponse.data.message}`);
+        
+        // 尝试代理API
+        const proxyResponse = await axios.post('/api/auth/login', {
+          phone: '13800138000',
+          password: '123456'
+        });
+        showResult('login-result', `代理API登录成功: ${proxyResponse.data.message}`);
+      } catch (error) {
+        showResult('login-result', `登录失败: ${error.response?.data?.message || error.message}`, true);
+      }
+    });
+  </script>
+</body>
+</html>

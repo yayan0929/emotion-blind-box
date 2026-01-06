@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 用户模型
+model User {
+  id            String    @id @default(cuid())
+  username      String
+  phone         String?   @unique
+  studentId     String?   @unique
+  school        String?
+  grade         String?
+  password      String
+  avatar        String?
+  isAnonymous   Boolean   @default(true)
+  anonymousName String    @default("匿名用户")
+  isActive      Boolean   @default(true)
+  role          String    @default("USER")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // 关联关系
+  boxes         EmotionBox[]
+  replies       Reply[]
+  likes         Like[]
+  boxViews      BoxView[]
+  // 移除与VerificationCode的关联，因为验证码可以为不存在的用户发送
+
+  @@map("users")
+}
+
+// 情绪盲盒模型
+model EmotionBox {
+  id          String       @id @default(cuid())
+  userId      String
+  title       String?
+  content     String
+  images      String       @default("[]")
+  isPublic    Boolean      @default(true)
+  allowReply  Boolean      @default(true)
+  viewCount   Int          @default(0)
+  isFeatured  Boolean      @default(false)
+  status      String    @default("ACTIVE")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // 关联关系
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies     Reply[]
+  views       BoxView[]
+
+  @@map("emotion_boxes")
+}
+
+// 回复模型
+model Reply {
+  id        String    @id @default(cuid())
+  boxId     String
+  userId    String
+  content   String
+  likeCount Int       @default(0)
+  status    String    @default("ACTIVE")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // 关联关系
+  box       EmotionBox @relation(fields: [boxId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes     Like[]
+
+  @@map("replies")
+}
+
+// 点赞模型
+model Like {
+  id        String   @id @default(cuid())
+  replyId   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  // 关联关系
+  reply     Reply    @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([replyId, userId])
+  @@map("likes")
+}
+
+// 盲盒查看记录模型
+model BoxView {
+  id        String   @id @default(cuid())
+  boxId     String
+  userId    String?
+  viewedAt  DateTime @default(now())
+
+  // 关联关系
+  box       EmotionBox @relation(fields: [boxId], references: [id], onDelete: Cascade)
+  user      User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("box_views")
+}
+
+// 验证码模型
+model VerificationCode {
+  id        String           @id @default(cuid())
+  phone     String
+  code      String
+  type      String
+  expiresAt DateTime
+  used      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  // 移除外键约束，允许为不存在的用户发送验证码
+
+  @@map("verification_codes")
+}
+
+// 系统设置模型
+model SystemSetting {
+  id           String @id @default(cuid())
+  settingKey   String @unique
+  settingValue String
+  description  String
+
+  @@map("system_settings")
+}
+
+// 敏感词模型
+model SensitiveWord {
+  id        String     @id @default(cuid())
+  word      String     @unique
+  level     String
+  createdAt DateTime   @default(now())
+
+  @@map("sensitive_words")
+}
+
+// 注意：SQLite 不支持枚举类型，使用字符串代替
+// 可用的枚举值：
+// Role: "USER", "ADMIN"
+// EmotionStatus: "ACTIVE", "ARCHIVED", "DELETED"
+// ReplyStatus: "ACTIVE", "DELETED"
+// VerificationType: "REGISTER", "LOGIN", "RESET_PASSWORD"
+// SensitivityLevel: "WARNING", "BLOCK"

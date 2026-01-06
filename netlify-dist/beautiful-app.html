@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>大学生情绪盲盒交换站</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+      
+      body {
+        font-family: 'Noto Sans SC', sans-serif;
+      }
+      
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      .box-3d {
+        transform-style: preserve-3d;
+        transition: transform 0.5s;
+      }
+      
+      .box-3d:hover {
+        transform: rotateY(10deg) rotateX(-10deg) scale(1.05);
+      }
+      
+      .box-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+      }
+      
+      .box-front {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        transform: translateZ(50px);
+      }
+      
+      .box-back {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        transform: rotateY(180deg) translateZ(50px);
+      }
+      
+      .box-right {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        transform: rotateY(90deg) translateZ(50px);
+      }
+      
+      .box-left {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        transform: rotateY(-90deg) translateZ(50px);
+      }
+      
+      .box-top {
+        background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        transform: rotateX(90deg) translateZ(50px);
+      }
+      
+      .box-bottom {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        transform: rotateX(-90deg) translateZ(50px);
+      }
+      
+      .floating {
+        animation: floating 3s ease-in-out infinite;
+      }
+      
+      @keyframes floating {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+      }
+      
+      .pulse {
+        animation: pulse 2s infinite;
+      }
+      
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      
+      .gradient-text {
+        background: linear-gradient(to right, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      
+      .shimmer {
+        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+        background-size: 200% 200%;
+        animation: shimmer 2s infinite;
+      }
+      
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+    </style>
+  </head>
+  <body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+      <!-- 顶部标题 -->
+      <header class="text-center mb-8">
+        <div class="inline-block">
+          <h1 class="text-4xl md:text-5xl font-bold text-white mb-2 drop-shadow-lg">
+            <i class="fas fa-heart text-pink-300 mr-2"></i>
+            大学生情绪盲盒交换站
+            <i class="fas fa-heart text-pink-300 ml-2"></i>
+          </h1>
+          <p class="text-xl text-white/90">一个温暖的匿名情绪互助平台</p>
+        </div>
+      </header>
+
+      <main>
+        <!-- 认证区域 -->
+        <section id="auth-section" class="max-w-md mx-auto mb-8">
+          <div class="glass-effect rounded-2xl shadow-2xl p-8">
+            <!-- 角色选择 -->
+            <div class="mb-6 bg-white/10 rounded-lg p-4">
+              <h3 class="text-center font-medium text-white mb-3">请选择您的身份</h3>
+              <div class="flex space-x-4">
+                <button id="user-role-btn" class="flex-1 py-2 px-4 bg-white/20 text-white rounded-lg border-2 border-white/40 font-medium hover:bg-white/30 transition-all">
+                  <i class="fas fa-user mr-2"></i>普通用户
+                </button>
+                <button id="admin-role-btn" class="flex-1 py-2 px-4 bg-white/10 text-white/70 rounded-lg border-2 border-white/20 font-medium hover:bg-white/20 transition-all">
+                  <i class="fas fa-user-shield mr-2"></i>管理员
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-4 flex border-b border-white/20">
+              <button id="login-tab" class="px-4 py-2 text-white border-b-2 border-white font-medium">
+                <i class="fas fa-sign-in-alt mr-2"></i>登录
+              </button>
+              <button id="register-tab" class="px-4 py-2 text-white/70 hover:text-white font-medium">
+                <i class="fas fa-user-plus mr-2"></i>注册
+              </button>
+            </div>
+            
+            <div id="error-message" class="hidden bg-red-500/20 border border-red-400/50 text-white px-4 py-3 rounded-lg mb-4 backdrop-blur-sm"></div>
+            <div id="success-message" class="hidden bg-green-500/20 border border-green-400/50 text-white px-4 py-3 rounded-lg mb-4 backdrop-blur-sm"></div>
+            
+            <!-- 登录表单 -->
+            <form id="login-form" class="space-y-4">
+              <div class="relative">
+                <label for="username" class="block text-sm font-medium text-white/90 mb-1">
+                  <i class="fas fa-user mr-1"></i>用户名/手机号
+                </label>
+                <input type="text" id="username" name="username" 
+                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm" 
+                       placeholder="请输入用户名或手机号" required>
+              </div>
+              
+              <div class="relative">
+                <label for="password" class="block text-sm font-medium text-white/90 mb-1">
+                  <i class="fas fa-lock mr-1"></i>密码
+                </label>
+                <input type="password" id="password" name="password" 
+                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm" 
+                       placeholder="请输入密码" required>
+              </div>
+              
+              <div>
+                <button type="submit" id="login-btn" 
+                        class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105 font-medium shadow-lg">
+                  <i class="fas fa-sign-in-alt mr-2"></i>登录
+                </button>
+              </div>
+              
+              <div class="mt-4 text-sm text-center text-white/80">
+                <p><i class="fas fa-info-circle mr-1"></i>管理员账号：admin / admin123</p>
+                <p>或者使用手机号：13800000000 / admin123</p>
+              </div>
+            </form>
+            
+            <!-- 注册表单 -->
+            <form id="register-form" class="hidden space-y-4">
+              <div class="relative">
+                <label for="reg-username" class="block text-sm font-medium text-white/90 mb-1">
+                  <i class="fas fa-user mr-1"></i>用户名
+                </label>
+                <input type="text" id="reg-username" name="username" 
+                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm" 
+                       placeholder="请输入用户名" required>
+              </div>
+              
+              <div class="relative">
+                <label for="reg-phone" class="block text-sm font-medium text-white/90 mb-1">
+                  <i class="fas fa-phone mr-1"></i>手机号
+                </label>
+                <input type="text" id="reg-phone" name="phone" 
+                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm" 
+                       placeholder="请输入手机号" required>
+              </div>
+              
+              <div class="grid grid-cols-2 gap-4">
+                <div class="relative">
+                  <label for="reg-school" class="block text-sm font-medium text-white/90 mb-1">
+                    <i class="fas fa-graduation-cap mr-1"></i>学校
+                  </label>
+                  <input type="text" id="reg-school" name="school" 
+                         class="w-full px-3 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm text-sm" 
+                         placeholder="请输入学校" required>
+                </div>
+                
+                <div class="relative">
+                  <label for="reg-grade" class="block text-sm font-medium text-white/90 mb-1">
+                    <i class="fas fa-book mr-1"></i>年级
+                  </label>
+                  <input type="text" id="reg-grade" name="grade" 
+                         class="w-full px-3 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm text-sm" 
+                         placeholder="请输入年级" required>
+                </div>
+              </div>
+              
+              <div class="relative">
+                <label for="reg-studentId" class="block text-sm font-medium text-white/90 mb-1">
+                  <i class="fas fa-id-card mr-1"></i>学号（可选）
+                </label>
+                <input type="text" id="reg-studentId" name="studentId" 
+                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm" 
+                       placeholder="请输入学号">
+              </div>
+              
+              <div class="relative">
+                <label for="reg-password" class="block text-sm font-medium text-white/90 mb-1">
+                  <i class="fas fa-lock mr-1"></i>密码
+                </label>
+                <input type="password" id="reg-password" name="password" 
+                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm" 
+                       placeholder="请输入密码" required>
+              </div>
+              
+              <div class="relative">
+                <label for="reg-confirm-password" class="block text-sm font-medium text-white/90 mb-1">
+                  <i class="fas fa-lock mr-1"></i>确认密码
+                </label>
+                <input type="password" id="reg-confirm-password" name="confirmPassword" 
+                       class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder-white/50 backdrop-blur-sm" 
+                       placeholder="请再次输入密码" required>
+              </div>
+              
+              <div>
+                <button type="submit" id="register-btn" 
+                        class="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white py-3 rounded-lg hover:from-green-600 hover:to-teal-600 transition-all transform hover:scale-105 font-medium shadow-lg">
+                  <i class="fas fa-user-plus mr-2"></i>注册
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- 欢迎区域 -->
+        <section id="welcome-section" class="hidden">
+          <div class="glass-effect rounded-2xl shadow-2xl p-8 max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-white text-center mb-6">
+              <i class="fas fa-heart text-pink-300 mr-2"></i>
+              欢迎来到情绪盲盒交换站
+              <i class="fas fa-heart text-pink-300 ml-2"></i>
+            </h2>
+            
+            <div id="user-info" class="bg-white/10 rounded-lg p-4 mb-6 backdrop-blur-sm">
+              <!-- 用户信息将在这里显示 -->
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- 抽取盲盒 -->
+              <div id="draw-box" class="glass-effect rounded-xl p-6 cursor-pointer hover:scale-105 transition-all transform floating">
+                <div class="text-center">
+                  <div class="w-32 h-32 mx-auto mb-4 relative">
+                    <div class="box-3d w-full h-full">
+                      <div class="box-face box-front flex items-center justify-center">
+                        <i class="fas fa-gift text-white text-4xl"></i>
+                      </div>
+                      <div class="box-face box-back flex items-center justify-center">
+                        <i class="fas fa-heart text-white text-4xl"></i>
+                      </div>
+                      <div class="box-face box-right flex items-center justify-center">
+                        <i class="fas fa-star text-white text-4xl"></i>
+                      </div>
+                      <div class="box-face box-left flex items-center justify-center">
+                        <i class="fas fa-smile text-white text-4xl"></i>
+                      </div>
+                      <div class="box-face box-top flex items-center justify-center">
+                        <i class="fas fa-moon text-white text-4xl"></i>
+                      </div>
+                      <div class="box-face box-bottom flex items-center justify-center">
+                        <i class="fas fa-sun text-white text-4xl"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <h3 class="text-xl font-semibold text-white mb-2">随机抽取盲盒</h3>
+                  <p class="text-white/80">获取他人分享的情绪盲盒，送上温暖回复</p>
+                </div>
+              </div>
+              
+              <!-- 分享情绪 -->
+              <div id="share-emotion" class="glass-effect rounded-xl p-6 cursor-pointer hover:scale-105 transition-all transform floating" style="animation-delay: 0.2s;">
+                <div class="text-center">
+                  <div class="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-share-alt text-white text-5xl"></i>
+                  </div>
+                  <h3 class="text-xl font-semibold text-white mb-2">分享情绪</h3>
+                  <p class="text-white/80">创建自己的情绪盲盒，分享您的感受</p>
+                </div>
+              </div>
+              
+              <!-- 个人中心 -->
+              <div id="personal-center" class="glass-effect rounded-xl p-6 cursor-pointer hover:scale-105 transition-all transform floating" style="animation-delay: 0.4s;">
+                <div class="text-center">
+                  <div class="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                    <i class="fas fa-user-circle text-white text-5xl"></i>
+                  </div>
+                  <h3 class="text-xl font-semibold text-white mb-2">个人中心</h3>
+                  <p class="text-white/80">查看自己的盲盒、回复和点赞记录</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 盲盒显示区域 -->
+            <div id="box-display" class="hidden mt-8">
+              <h3 class="text-2xl font-semibold text-white mb-4 text-center">
+                <i class="fas fa-gift mr-2"></i>抽中的情绪盲盒
+              </h3>
+              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <div class="mb-4">
+                  <p id="box-content" class="text-white text-lg leading-relaxed"></p>
+                  <div class="mt-4 flex items-center text-white/80">
+                    <i class="fas fa-comments mr-2"></i>
+                    <span id="reply-count">0 个回复</span>
+                  </div>
+                </div>
+                <div class="mt-6">
+                  <label class="block text-sm font-medium text-white/90 mb-2">
+                    <i class="fas fa-reply mr-1"></i>写下你的回复
+                  </label>
+                  <textarea id="reply-content" class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 backdrop-blur-sm" rows="3" placeholder="写下你的回复..."></textarea>
+                  <button id="submit-reply" class="mt-3 px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105">
+                    <i class="fas fa-paper-plane mr-2"></i>发送回复
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 分享情绪表单 -->
+            <div id="emotion-form" class="hidden mt-8">
+              <h3 class="text-2xl font-semibold text-white mb-4 text-center">
+                <i class="fas fa-share-alt mr-2"></i>分享你的情绪
+              </h3>
+              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                <textarea id="emotion-content" class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 backdrop-blur-sm" rows="5" placeholder="分享你的情绪和感受..."></textarea>
+                <div class="mt-4 flex items-center space-x-6">
+                  <label class="flex items-center text-white/80 cursor-pointer">
+                    <input type="checkbox" id="is-public" checked class="mr-2 w-4 h-4">
+                    <span><i class="fas fa-globe mr-1"></i>公开分享</span>
+                  </label>
+                  <label class="flex items-center text-white/80 cursor-pointer">
+                    <input type="checkbox" id="allow-reply" checked class="mr-2 w-4 h-4">
+                    <span><i class="fas fa-comment mr-1"></i>允许回复</span>
+                  </label>
+                </div>
+                <button id="submit-emotion" class="mt-4 px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 transition-all transform hover:scale-105">
+                  <i class="fas fa-share-alt mr-2"></i>分享情绪
+                </button>
+              </div>
+            </div>
+            
+            <!-- 个人中心区域 -->
+            <div id="user-center" class="hidden mt-8">
+              <h3 class="text-2xl font-semibold text-white mb-4 text-center">
+                <i class="fas fa-user-circle mr-2"></i>个人中心
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <h4 class="font-semibold text-white mb-4">
+                    <i class="fas fa-gift mr-2"></i>我的盲盒
+                  </h4>
+                  <div id="my-boxes" class="space-y-3">
+                    <!-- 用户的盲盒将在这里显示 -->
+                  </div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+                  <h4 class="font-semibold text-white mb-4">
+                    <i class="fas fa-comment mr-2"></i>我的回复
+                  </h4>
+                  <div id="my-replies" class="space-y-3">
+                    <!-- 用户的回复将在这里显示 -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+  <script>
+    // 动态获取API基础URL，支持本地网络访问和生产环境
+    const API_BASE = import.meta?.env?.VITE_API_BASE_URL || 
+      (window.location.origin.includes('localhost') 
+        ? 'http://localhost:3001' 
+        : 'https://emotion-blind-box-api.onrender.com');
+    
+    console.log('API_BASE:', API_BASE);
+    let authToken = '';
+    let currentUser = null;
+    let currentBoxId = null;
+    
+    // 认证相关元素
+    const authSection = document.getElementById('auth-section');
+    const userRoleBtn = document.getElementById('user-role-btn');
+    const adminRoleBtn = document.getElementById('admin-role-btn');
+    const loginTab = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const errorMessage = document.getElementById('error-message');
+    const successMessage = document.getElementById('success-message');
+    const welcomeSection = document.getElementById('welcome-section');
+    
+    // 当前选择的角色
+    let currentRole = 'user'; // 'user' 或 'admin'
+    
+    // 功能区域
+    const drawBoxBtn = document.getElementById('draw-box');
+    const shareEmotionBtn = document.getElementById('share-emotion');
+    const personalCenterBtn = document.getElementById('personal-center');
+    
+    // 用户信息显示
+    const userInfo = document.getElementById('user-info');
+    
+    // 功能表单
+    const boxDisplay = document.getElementById('box-display');
+    const emotionForm = document.getElementById('emotion-form');
+    const userCenter = document.getElementById('user-center');
+    
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.remove('hidden');
+      successMessage.classList.add('hidden');
+      
+      setTimeout(() => {
+        errorMessage.classList.add('hidden');
+      }, 5000);
+    }
+    
+    function showSuccess(message) {
+      successMessage.textContent = message;
+      successMessage.classList.remove('hidden');
+      errorMessage.classList.add('hidden');
+      
+      setTimeout(() => {
+        successMessage.classList.add('hidden');
+      }, 3000);
+    }
+    
+    // 角色切换
+    userRoleBtn.addEventListener('click', () => {
+      currentRole = 'user';
+      userRoleBtn.classList.add('bg-white/20', 'text-white', 'border-white/40');
+      userRoleBtn.classList.remove('bg-white/10', 'text-white/70', 'border-white/20');
+      adminRoleBtn.classList.add('bg-white/10', 'text-white/70', 'border-white/20');
+      adminRoleBtn.classList.remove('bg-white/20', 'text-white', 'border-white/40');
+    });
+    
+    adminRoleBtn.addEventListener('click', () => {
+      currentRole = 'admin';
+      adminRoleBtn.classList.add('bg-white/20', 'text-white', 'border-white/40');
+      adminRoleBtn.classList.remove('bg-white/10', 'text-white/70', 'border-white/20');
+      userRoleBtn.classList.add('bg-white/10', 'text-white/70', 'border-white/20');
+      userRoleBtn.classList.remove('bg-white/20', 'text-white', 'border-white/40');
+    });
+    
+    // 标签页切换
+    loginTab.addEventListener('click', () => {
+      loginTab.classList.add('text-white', 'border-b-2', 'border-white');
+      loginTab.classList.remove('text-white/70');
+      registerTab.classList.add('text-white/70');
+      registerTab.classList.remove('text-white', 'border-b-2', 'border-white');
+      
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+    });
+    
+    registerTab.addEventListener('click', () => {
+      registerTab.classList.add('text-white', 'border-b-2', 'border-white');
+      registerTab.classList.remove('text-white/70');
+      loginTab.classList.add('text-white/70');
+      loginTab.classList.remove('text-white', 'border-b-2', 'border-white');
+      
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+    });
+    
+    // 注册处理
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('reg-username').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const studentId = document.getElementById('reg-studentId').value.trim();
+      const school = document.getElementById('reg-school').value.trim();
+      const grade = document.getElementById('reg-grade').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
+      
+      console.log('注册表单数据:', { username, phone, studentId, school, grade, role: currentRole, hasPassword: !!password });
+      
+      // 基本验证
+      if (!username) {
+        showError('请输入用户名');
+        return;
+      }
+      
+      if (!phone) {
+        showError('请输入手机号');
+        return;
+      }
+      
+      if (!school) {
+        showError('请输入学校');
+        return;
+      }
+      
+      if (!grade) {
+        showError('请输入年级');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showError('两次输入的密码不一致');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showError('密码长度至少6位');
+        return;
+      }
+      
+      registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>注册中...';
+      registerBtn.disabled = true;
+      
+      try {
+        console.log('发送注册请求...');
+        const response = await axios.post(`${API_BASE}/api/auth/register`, {
+          username,
+          phone,
+          studentId: studentId || undefined,
+          school,
+          grade,
+          password,
+          isAnonymous: true, // 添加匿名标志
+          anonymousName: `${username}_匿名`, // 添加匿名昵称
+          role: currentRole // 添加角色字段
+        });
+        
+        console.log('注册响应:', response.data);
+        
+        if (response.data.success) {
+          // 注册成功，显示欢迎页面
+          showSuccess('注册成功！');
+          setTimeout(() => {
+            authSection.classList.add('hidden');
+            welcomeSection.classList.remove('hidden');
+            
+            // 保存token和用户信息
+            authToken = response.data.data.tokens.accessToken;
+            currentUser = response.data.data.user;
+            localStorage.setItem('token', authToken);
+            
+            // 如果是管理员，直接跳转到管理后台
+            if (currentUser.role === 'admin') {
+              window.location.href = '/admin.html';
+              return;
+            }
+            
+            // 显示用户信息
+            userInfo.innerHTML = `
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-xl font-semibold text-white mb-2">用户信息</h3>
+                  <p class="text-white/90"><i class="fas fa-user mr-2"></i><strong>用户名:</strong> ${currentUser.username}</p>
+                  <p class="text-white/90"><i class="fas fa-user-secret mr-2"></i><strong>匿名昵称:</strong> ${currentUser.anonymousName}</p>
+                  <p class="text-white/90"><i class="fas fa-graduation-cap mr-2"></i><strong>学校:</strong> ${currentUser.school || '未填写'}</p>
+                  <p class="text-white/90"><i class="fas fa-book mr-2"></i><strong>年级:</strong> ${currentUser.grade || '未填写'}</p>
+                </div>
+                <div class="text-right">
+                  <button class="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all">
+                    <i class="fas fa-sign-out-alt mr-2"></i>退出登录
+                  </button>
+                </div>
+              </div>
+            `;
+          }, 1000);
+        } else {
+          showError(response.data.message || '注册失败');
+        }
+      } catch (error) {
+        console.error('注册错误:', error);
+        const errorMessage = error.response?.data?.message || error.message || '注册失败，请重试';
+        showError(errorMessage);
+      }
+      
+      registerBtn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>注册';
+      registerBtn.disabled = false;
+    });
+    
+    // 登录处理
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>登录中...';
+      loginBtn.disabled = true;
+      
+      try {
+        const response = await axios.post(`${API_BASE}/api/auth/login`, {
+          phone: username,  // 使用phone字段，但实际可以是用户名
+          password: password,
+          role: currentRole  // 添加角色字段
+        });
+        
+        if (response.data.success) {
+          // 检查是否为管理员
+          if (response.data.data.user.role === 'admin') {
+            // 管理员登录，跳转到管理后台
+            authToken = response.data.data.tokens.accessToken;
+            localStorage.setItem('token', authToken);
+            window.location.href = '/admin.html';
+            return;
+          }
+          
+          // 普通用户登录，显示欢迎页面
+          showSuccess('登录成功！');
+          setTimeout(() => {
+            authSection.classList.add('hidden');
+            welcomeSection.classList.remove('hidden');
+            
+            // 保存token和用户信息
+            authToken = response.data.data.tokens.accessToken;
+            currentUser = response.data.data.user;
+            localStorage.setItem('token', authToken);
+            
+            // 显示用户信息
+            userInfo.innerHTML = `
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-xl font-semibold text-white mb-2">用户信息</h3>
+                  <p class="text-white/90"><i class="fas fa-user mr-2"></i><strong>用户名:</strong> ${currentUser.username}</p>
+                  <p class="text-white/90"><i class="fas fa-user-secret mr-2"></i><strong>匿名昵称:</strong> ${currentUser.anonymousName}</p>
+                  <p class="text-white/90"><i class="fas fa-graduation-cap mr-2"></i><strong>学校:</strong> ${currentUser.school || '未填写'}</p>
+                  <p class="text-white/90"><i class="fas fa-book mr-2"></i><strong>年级:</strong> ${currentUser.grade || '未填写'}</p>
+                </div>
+                <div class="text-right">
+                  <button class="px-4 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition-all">
+                    <i class="fas fa-sign-out-alt mr-2"></i>退出登录
+                  </button>
+                </div>
+              </div>
+            `;
+          }, 1000);
+        } else {
+          showError(response.data.message || '登录失败');
+        }
+      } catch (error) {
+        console.error('登录错误:', error);
+        const errorMessage = error.response?.data?.message || error.message || '网络错误，请检查后端服务是否运行';
+        showError(`登录失败: ${errorMessage}`);
+      }
+      
+      loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>登录';
+      loginBtn.disabled = false;
+    });
+    
+    // 功能按钮点击事件
+    drawBoxBtn?.addEventListener('click', () => {
+      hideAllForms();
+      boxDisplay.classList.remove('hidden');
+      loadRandomBox();
+    });
+    
+    shareEmotionBtn?.addEventListener('click', () => {
+      hideAllForms();
+      emotionForm.classList.remove('hidden');
+    });
+    
+    personalCenterBtn?.addEventListener('click', () => {
+      hideAllForms();
+      userCenter.classList.remove('hidden');
+      loadUserData();
+    });
+    
+    // 隐藏所有表单
+    function hideAllForms() {
+      boxDisplay.classList.add('hidden');
+      emotionForm.classList.add('hidden');
+      userCenter.classList.add('hidden');
+    }
+    
+    // 加载随机盲盒
+    async function loadRandomBox() {
+      try {
+        // 显示加载状态
+        document.getElementById('box-content').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>正在加载盲盒...';
+        document.getElementById('reply-count').textContent = '加载中...';
+        
+        // 调用后端API获取随机盲盒
+        const response = await axios.get(`${API_BASE}/api/boxes/random/one`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
+        });
+        
+        if (response.data.success) {
+          const box = response.data.data.box;
+          currentBoxId = box.id;
+          
+          document.getElementById('box-content').innerHTML = box.content;
+          document.getElementById('reply-count').innerHTML = `<i class="fas fa-comments mr-2"></i>${box._count.replies} 个回复`;
+          
+          // 加载回复
+          loadReplies(box.id);
+        } else {
+          showError(response.data.message || '加载盲盒失败');
+          document.getElementById('box-content').innerHTML = '加载失败，请重试';
+        }
+      } catch (error) {
+        console.error('加载盲盒失败:', error);
+        showError('加载盲盒失败，请重试');
+        document.getElementById('box-content').innerHTML = '加载失败，请重试';
+      }
+    }
+    
+    // 加载回复
+    async function loadReplies(boxId) {
+      try {
+        const response = await axios.get(`${API_BASE}/api/boxes/${boxId}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
+        });
+        
+        if (response.data.success) {
+          const box = response.data.data.box;
+          // 这里可以添加显示回复的逻辑
+        }
+      } catch (error) {
+        console.error('加载回复失败:', error);
+      }
+    }
+    
+    // 提交回复
+    document.getElementById('submit-reply')?.addEventListener('click', async () => {
+      const content = document.getElementById('reply-content').value.trim();
+      if (!content) {
+        showError('请输入回复内容');
+        return;
+      }
+      
+      if (!currentBoxId) {
+        showError('请先抽取盲盒');
+        return;
+      }
+      
+      try {
+        // 调用后端API提交回复
+        const response = await axios.post(`${API_BASE}/api/replies`, {
+          boxId: currentBoxId,
+          content: content
+        }, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
+        });
+        
+        if (response.data.success) {
+          showSuccess('回复发送成功！');
+          document.getElementById('reply-content').value = '';
+          
+          // 更新回复计数
+          const countElement = document.getElementById('reply-count');
+          const currentCount = parseInt(countElement.textContent) || 0;
+          countElement.innerHTML = `<i class="fas fa-comments mr-2"></i>${currentCount + 1} 个回复`;
+          
+          // 重新加载回复
+          loadReplies(currentBoxId);
+        } else {
+          showError(response.data.message || '发送回复失败');
+        }
+      } catch (error) {
+        console.error('发送回复失败:', error);
+        showError('发送回复失败，请重试');
+      }
+    });
+    
+    // 提交情绪
+    document.getElementById('submit-emotion')?.addEventListener('click', async () => {
+      const content = document.getElementById('emotion-content').value.trim();
+      const isPublic = document.getElementById('is-public').checked;
+      const allowReply = document.getElementById('allow-reply').checked;
+      
+      if (!content) {
+        showError('请输入要分享的情绪内容');
+        return;
+      }
+      
+      try {
+        // 调用后端API创建情绪盲盒
+        const response = await axios.post(`${API_BASE}/api/boxes`, {
+          content: content,
+          isPublic: isPublic,
+          allowReply: allowReply
+        }, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
+        });
+        
+        if (response.data.success) {
+          showSuccess('情绪盲盒创建成功！');
+          document.getElementById('emotion-content').value = '';
+          
+          // 切换到盲盒显示区域
+          hideAllForms();
+          boxDisplay.classList.remove('hidden');
+          
+          // 显示刚创建的盲盒
+          document.getElementById('box-content').innerHTML = content;
+          document.getElementById('reply-count').innerHTML = '<i class="fas fa-comments mr-2"></i>0 个回复';
+        } else {
+          showError(response.data.message || '创建情绪盲盒失败');
+        }
+      } catch (error) {
+        console.error('创建情绪盲盒失败:', error);
+        showError('创建情绪盲盒失败，请重试');
+      }
+    });
+    
+    // 加载用户数据
+    async function loadUserData() {
+      try {
+        // 加载用户盲盒
+        const boxesResponse = await axios.get(`${API_BASE}/api/boxes`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          },
+          params: {
+            userId: currentUser.id
+          }
+        });
+        
+        if (boxesResponse.data.success) {
+          const boxes = boxesResponse.data.data.boxes;
+          
+          if (boxes.length === 0) {
+            document.getElementById('my-boxes').innerHTML = '<p class="text-white/60 text-center">您还没有创建盲盒</p>';
+          } else {
+            document.getElementById('my-boxes').innerHTML = boxes.map(box => `
+              <div class="bg-white/5 rounded-lg p-3 border border-white/10">
+                <p class="text-white/90 mb-1">${box.content}</p>
+                <p class="text-white/60 text-sm">${box._count.replies}个回复 · 创建于${new Date(box.createdAt).toLocaleDateString()}</p>
+              </div>
+            `).join('');
+          }
+        }
+        
+        // 加载用户回复
+        const repliesResponse = await axios.get(`${API_BASE}/api/replies/admin/all`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          },
+          params: {
+            userId: currentUser.id
+          }
+        });
+        
+        if (repliesResponse.data.success) {
+          const replies = repliesResponse.data.data.replies;
+          
+          if (replies.length === 0) {
+            document.getElementById('my-replies').innerHTML = '<p class="text-white/60 text-center">您还没有回复盲盒</p>';
+          } else {
+            document.getElementById('my-replies').innerHTML = replies.map(reply => `
+              <div class="bg-white/5 rounded-lg p-3 border border-white/10">
+                <p class="text-white/90 mb-1">${reply.content}</p>
+                <p class="text-white/60 text-sm">回复于${new Date(reply.createdAt).toLocaleDateString()}</p>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (error) {
+        console.error('加载用户数据失败:', error);
+        showError('加载用户数据失败，请重试');
+      }
+    }
+  </script>
+</body>
+</html>

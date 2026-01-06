@@ -1,0 +1,29 @@
+services:
+  # 后端API服务
+  - type: web
+    name: emotion-blind-box-api
+    env: docker
+    dockerfilePath: ./server/Dockerfile
+    dockerContext: ./server
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+
+  # PostgreSQL数据库
+  - type: pserv
+    name: emotion-blind-box-db
+    plan: free
+    env: docker
+    dockerfilePath: ./Dockerfile
+    databaseName: emotion_blind_box

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试后端连接</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body class="bg-blue-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+      <h1 class="text-3xl font-bold text-blue-600 text-center mb-8">测试后端连接</h1>
+      
+      <div class="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+        <h2 class="text-xl font-semibold mb-4">测试结果</h2>
+        <div id="test-results" class="space-y-4">
+          <div class="p-3 bg-gray-100 rounded">
+            <p class="font-medium">健康检查:</p>
+            <p id="health-result">等待测试...</p>
+          </div>
+          
+          <div class="p-3 bg-gray-100 rounded">
+            <p class="font-medium">数据库连接:</p>
+            <p id="db-result">等待测试...</p>
+          </div>
+          
+          <div class="p-3 bg-gray-100 rounded">
+            <p class="font-medium">登录测试:</p>
+            <p id="login-result">等待测试...</p>
+          </div>
+        </div>
+        
+        <div class="mt-6">
+          <button id="run-tests" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors">
+            运行测试
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_BASE = 'http://localhost:3001';
+      
+      document.getElementById('run-tests').addEventListener('click', async () => {
+        const healthResult = document.getElementById('health-result');
+        const dbResult = document.getElementById('db-result');
+        const loginResult = document.getElementById('login-result');
+        
+        healthResult.textContent = '测试中...';
+        dbResult.textContent = '等待中...';
+        loginResult.textContent = '等待中...';
+        
+        // 测试健康检查
+        try {
+          const healthResponse = await axios.get(`${API_BASE}/health`);
+          healthResult.textContent = `✅ ${healthResponse.data.message}`;
+          healthResult.className = 'text-green-600';
+        } catch (error) {
+          healthResult.textContent = `❌ 连接失败: ${error.message}`;
+          healthResult.className = 'text-red-600';
+          // 如果健康检查失败，跳过其他测试
+          return;
+        }
+        
+        // 测试数据库用户数量
+        try {
+          dbResult.textContent = '测试中...';
+          const userCountResponse = await axios.get(`${API_BASE}/api/admin/users`, {
+            headers: { 'Authorization': 'Bearer fake-token-for-test' }
+          }).catch(async () => {
+            // 如果管理员接口需要认证，尝试直接查询数据库
+            const testResponse = await axios.post(`${API_BASE}/api/auth/login`, {
+              phone: '13800000000',
+              password: 'admin123'
+            });
+            return testResponse;
+          });
+          
+          if (userCountResponse.data.success) {
+            dbResult.textContent = `✅ 数据库连接正常`;
+            dbResult.className = 'text-green-600';
+          } else {
+            dbResult.textContent = `✅ 数据库连接正常 (但可能未初始化)`;
+            dbResult.className = 'text-yellow-600';
+          }
+        } catch (error) {
+          if (error.response && error.response.status === 401) {
+            dbResult.textContent = `✅ 数据库连接正常 (需要认证)`;
+            dbResult.className = 'text-green-600';
+          } else {
+            dbResult.textContent = `❌ 数据库连接失败: ${error.message}`;
+            dbResult.className = 'text-red-600';
+          }
+        }
+        
+        // 测试登录
+        try {
+          loginResult.textContent = '测试中...';
+          const loginResponse = await axios.post(`${API_BASE}/api/auth/login`, {
+            phone: '13800000000',
+            password: 'admin123'
+          });
+          
+          if (loginResponse.data.success) {
+            loginResult.textContent = `✅ 登录成功: ${loginResponse.data.data.user.username}`;
+            loginResult.className = 'text-green-600';
+          } else {
+            loginResult.textContent = `❌ 登录失败: ${loginResponse.data.message}`;
+            loginResult.className = 'text-red-600';
+          }
+        } catch (error) {
+          if (error.response) {
+            loginResult.textContent = `❌ 登录失败: ${error.response.data.message}`;
+          } else {
+            loginResult.textContent = `❌ 登录请求失败: ${error.message}`;
+          }
+          loginResult.className = 'text-red-600';
+        }
+      });
+    </script>
+  </body>
+</html>

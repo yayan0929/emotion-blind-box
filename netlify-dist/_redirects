@@ -1,0 +1,5 @@
+# 将所有API请求重定向到后端服务器
+/api/* https://emotion-blind-box-api.onrender.com/api/:splat 200
+
+# 将所有其他请求重定向到index.html
+/* /index.html 200

@@ -1,0 +1,29 @@
+{
+  "name": "emotion-blind-box-exchange",
+  "version": "1.0.0",
+  "description": "大学生情绪盲盒交换站 - 匿名情绪互助平台",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "start": "cd server && npm start"
+  },
+  "keywords": [
+    "emotion",
+    "blind-box",
+    "exchange",
+    "university",
+    "anonymous",
+    "support"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
