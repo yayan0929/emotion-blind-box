@@ -2,14 +2,14 @@ import express from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { PrismaClient } from '@prisma/client'
-import { authMiddleware } from '@/middleware/auth'
-import { sendVerificationCode } from '@/utils/helpers'
-import { sendVerificationEmail, sendWelcomeEmail } from '@/utils/email'
+import { authMiddleware } from '../middleware/auth'
+import { sendVerificationCode } from '../utils/helpers'
+import { sendVerificationEmail, sendWelcomeEmail } from '../utils/email'
 import {
   registerSchema,
   loginSchema,
   resetPasswordSchema
-} from '@/utils/validation'
+} from '../utils/validation'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -87,16 +87,19 @@ router.post('/register', async (req, res, next) => {
     // 验证码已跳过，无需标记
 
     // 生成JWT令牌
+    const jwtSecret = process.env.JWT_SECRET || 'default-secret-key'
+    const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET || 'default-refresh-secret-key'
+    
     const accessToken = jwt.sign(
       { userId: newUser.id, role: newUser.role },
-      process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      jwtSecret,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as any
     )
 
     const refreshToken = jwt.sign(
       { userId: newUser.id },
-      process.env.JWT_REFRESH_SECRET!,
-      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
+      jwtRefreshSecret,
+      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' } as any
     )
 
     res.status(201).json({
@@ -185,16 +188,19 @@ router.post('/login', async (req, res, next) => {
     }
 
     // 生成JWT令牌
+    const jwtSecret = process.env.JWT_SECRET || 'default-secret-key'
+    const jwtRefreshSecret = process.env.JWT_REFRESH_SECRET || 'default-refresh-secret-key'
+    
     const accessToken = jwt.sign(
       { userId: user.id, role: user.role },
-      process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      jwtSecret,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as any
     )
 
     const refreshToken = jwt.sign(
       { userId: user.id },
-      process.env.JWT_REFRESH_SECRET!,
-      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
+      jwtRefreshSecret,
+      { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d' } as any
     )
 
     // 返回用户信息（不包括密码）
@@ -244,10 +250,12 @@ router.post('/refresh', async (req, res, next) => {
     }
 
     // 生成新的访问令牌
+    const jwtSecret = process.env.JWT_SECRET || 'default-secret-key'
+    
     const accessToken = jwt.sign(
       { userId: user.id, role: user.role },
-      process.env.JWT_SECRET!,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      jwtSecret,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as any
     )
 
     res.json({

@@ -1,6 +1,6 @@
 import express from 'express'
 import { PrismaClient } from '@prisma/client'
-import { authMiddleware, adminMiddleware } from '@/middleware/auth'
+import { authMiddleware, adminMiddleware } from '../middleware/auth'
 
 const router = express.Router()
 const prisma = new PrismaClient()
@@ -87,7 +87,7 @@ router.get('/:key', async (req, res, next) => {
     }
     
     // 尝试转换为合适的类型
-    let value = setting.settingValue
+    let value: any = setting.settingValue
     if (value === 'true') value = true
     else if (value === 'false') value = false
     else if (/^\d+$/.test(value)) value = parseInt(value)

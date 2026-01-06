@@ -1,6 +1,6 @@
 import express from 'express'
 import { PrismaClient } from '@prisma/client'
-import { authMiddleware, adminMiddleware } from '@/middleware/auth'
+import { authMiddleware, adminMiddleware } from '../middleware/auth'
 import bcrypt from 'bcryptjs'
 import { format, subDays, startOfDay, endOfDay } from 'date-fns'
 
@@ -1075,7 +1075,7 @@ router.get('/settings', authMiddleware, adminMiddleware, async (req, res, next) 
 // 更新系统设置
 router.put('/settings', authMiddleware, adminMiddleware, async (req, res, next) => {
   try {
-    const settings = req.body
+    const settings = req.body as Record<string, any>
     
     if (!settings || typeof settings !== 'object') {
       return res.status(400).json({
@@ -1088,8 +1088,12 @@ router.put('/settings', authMiddleware, adminMiddleware, async (req, res, next) 
     const updatePromises = Object.entries(settings).map(async ([key, value]) => {
       return prisma.systemSetting.upsert({
         where: { settingKey: key },
-        update: { settingValue: String(value) },
-        create: { settingKey: key, settingValue: String(value) }
+        update: { settingValue: String(value as any) },
+        create: { 
+          settingKey: key, 
+          settingValue: String(value as any),
+          description: `系统设置: ${key}`
+        }
       })
     })
     
@@ -1145,7 +1149,11 @@ router.put('/settings/:key', authMiddleware, adminMiddleware, async (req, res, n
     const setting = await prisma.systemSetting.upsert({
       where: { settingKey: key },
       update: { settingValue: String(value) },
-      create: { settingKey: key, settingValue: String(value) }
+      create: { 
+        settingKey: key, 
+        settingValue: String(value),
+        description: `系统设置: ${key}`
+      }
     })
     
     res.json({
@@ -1166,12 +1174,12 @@ router.post('/settings/reset', authMiddleware, adminMiddleware, async (req, res,
     
     // 创建默认设置
     const defaultSettings = [
-      { settingKey: 'SITE_NAME', settingValue: '情绪盲盒' },
-      { settingKey: 'SITE_DESCRIPTION', settingValue: '分享情绪，传递温暖' },
-      { settingKey: 'ALLOW_ANONYMOUS', settingValue: 'true' },
-      { settingKey: 'REQUIRE_APPROVAL', settingValue: 'false' },
-      { settingKey: 'MAX_DAILY_BOXES', settingValue: '5' },
-      { settingKey: 'MIN_REPLY_INTERVAL', settingValue: '30' }
+      { settingKey: 'SITE_NAME', settingValue: '情绪盲盒', description: '站点名称' },
+      { settingKey: 'SITE_DESCRIPTION', settingValue: '分享情绪，传递温暖', description: '站点描述' },
+      { settingKey: 'ALLOW_ANONYMOUS', settingValue: 'true', description: '允许匿名' },
+      { settingKey: 'REQUIRE_APPROVAL', settingValue: 'false', description: '需要审核' },
+      { settingKey: 'MAX_DAILY_BOXES', settingValue: '5', description: '每日最大盲盒数' },
+      { settingKey: 'MIN_REPLY_INTERVAL', settingValue: '30', description: '回复最小间隔' }
     ]
     
     await prisma.systemSetting.createMany({

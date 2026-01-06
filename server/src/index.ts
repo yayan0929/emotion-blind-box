@@ -5,28 +5,23 @@ import morgan from 'morgan'
 import compression from 'compression'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import dotenv from 'dotenv'
 
-import { errorHandler } from '@/middleware/errorHandler'
-import { notFound } from '@/middleware/notFound'
-import authRoutes from '@/routes/auth'
-import userRoutes from '@/routes/users'
-import boxRoutes from '@/routes/boxes'
-import replyRoutes from '@/routes/replies'
-import uploadRoutes from '@/routes/upload'
-import adminRoutes from '@/routes/admin'
-import settingsRoutes from '@/routes/settings'
+import { errorHandler } from './middleware/errorHandler'
+import { notFound } from './middleware/notFound'
+import authRoutes from './routes/auth'
+import userRoutes from './routes/users'
+import boxRoutes from './routes/boxes'
+import replyRoutes from './routes/replies'
+import uploadRoutes from './routes/upload'
+import adminRoutes from './routes/admin'
+import settingsRoutes from './routes/settings'
 
 // 配置环境变量
 dotenv.config()
 
 const app = express()
 const PORT = Number(process.env.PORT) || 3001
-
-// 获取当前目录路径
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 // 安全中间件
 app.use(helmet({
@@ -107,25 +102,16 @@ app.use(notFound)
 app.use(errorHandler)
 
 // 启动服务器
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 服务器运行在端口 ${PORT}`)
-  console.log(`🌍 环境: ${process.env.NODE_ENV || 'development'}`)
-  console.log(`📊 健康检查: http://localhost:${PORT}/health`)
-  console.log(`📡 本地网络访问地址: http://0.0.0.0:${PORT}`)
-  
-  // 获取本机IP地址
-  const { networkInterfaces } = require('os');
-  const nets = networkInterfaces();
-  
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name] || []) {
-      // 跳过内部地址和非IPv4地址
-      if (net.family === 'IPv4' && !net.internal) {
-        console.log(`🌐 外部访问地址: http://${net.address}:${PORT}`);
-        console.log(`📱 移动设备访问地址: http://${net.address}:${PORT}`);
-      }
-    }
-  }
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on http://0.0.0.0:${PORT}`)
+  console.log(`🔍 Render assigned port: ${process.env.PORT}`) // 打印 Render 分配的端口
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`)
+  console.log(`📊 Health check: http://0.0.0.0:${PORT}/health`)
+})
+
+// 兜底：捕获端口监听错误
+server.on('error', (err) => {
+  console.error('❌ Server error:', err);
 })
 
 export default app

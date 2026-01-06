@@ -23,14 +23,14 @@ export const comparePassword = async (
 export const generateToken = (payload: object): string => {
   return jwt.sign(payload, process.env.JWT_SECRET!, {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d'
-  })
+  } as jwt.SignOptions)
 }
 
 // 生成刷新令牌
 export const generateRefreshToken = (payload: object): string => {
   return jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {
     expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '30d'
-  })
+  } as jwt.SignOptions)
 }
 
 // 验证JWT令牌

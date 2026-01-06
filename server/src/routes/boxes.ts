@@ -1,8 +1,8 @@
 import express from 'express'
-import { PrismaClient, EmotionStatus } from '@prisma/client'
-import { authMiddleware } from '@/middleware/auth'
-import { adminMiddleware } from '@/middleware/auth'
-import { checkSensitiveContent } from '@/utils/helpers'
+import { PrismaClient } from '@prisma/client'
+import { authMiddleware } from '../middleware/auth'
+import { adminMiddleware } from '../middleware/auth'
+import { checkSensitiveContent } from '../utils/helpers'
 
 const router = express.Router()
 const prisma = new PrismaClient()

@@ -1,7 +1,7 @@
 import express from 'express'
 import { PrismaClient } from '@prisma/client'
-import { authMiddleware } from '@/middleware/auth'
-import { adminMiddleware } from '@/middleware/auth'
+import { authMiddleware } from '../middleware/auth'
+import { adminMiddleware } from '../middleware/auth'
 import bcrypt from 'bcryptjs'
 
 const router = express.Router()
