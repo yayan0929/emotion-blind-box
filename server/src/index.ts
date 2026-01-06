@@ -22,7 +22,7 @@ import settingsRoutes from '@/routes/settings'
 dotenv.config()
 
 const app = express()
-const PORT = process.env.PORT || 3001
+const PORT = Number(process.env.PORT) || 3001
 
 // 获取当前目录路径
 const __filename = fileURLToPath(import.meta.url)
@@ -35,7 +35,7 @@ app.use(helmet({
 
 // CORS配置
 const allowedOrigins = process.env.NODE_ENV === 'production' 
-  ? [process.env.FRONTEND_URL].filter(Boolean)
+  ? [process.env.FRONTEND_URL].filter(Boolean) as string[]
   : ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000'];
 
 // 如果有额外的允许源，添加到列表
