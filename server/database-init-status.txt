@@ -1,0 +1,12 @@
+数据库初始化状态:
+- Prisma schema 已修改为使用 SQLite
+- init-db.js 文件已准备好
+- 等待手动执行初始化命令
+
+要完成数据库初始化，请手动执行以下命令:
+1. cd c:/Users/HP/CodeBuddy/239025009/server
+2. npx prisma generate
+3. npx prisma db push
+4. node init-db.js
+
+或者直接运行 setup-db.bat 文件

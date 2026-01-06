@@ -1,45 +1,66 @@
 @echo off
-echo 准备部署到Netlify...
+title 部署到Netlify
+echo.
+echo ========================================
+echo  大学生情绪盲盒交换站 - Netlify部署工具
+echo ========================================
 echo.
 
-echo 1. 检查netlify-dist目录...
-if not exist "netlify-dist" (
-    echo 创建netlify-dist目录...
-    mkdir netlify-dist
+echo 步骤1: 检查Node.js是否安装...
+node --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo 错误: 未找到Node.js，请先安装Node.js
+    echo 下载地址: https://nodejs.org/
+    pause
+    exit /b 1
 )
-
-echo 2. 复制前端文件...
-copy client\public\*.html netlify-dist\ /Y > nul
-
-echo 3. 创建Netlify配置文件...
-echo # 将所有API请求重定向到后端服务器 > netlify-dist\_redirects
-echo /api/* https://emotion-blind-box-api.onrender.com/:splat 200 >> netlify-dist\_redirects
-echo. >> netlify-dist\_redirects
-echo # 将所有其他请求重定向到index.html >> netlify-dist\_redirects
-echo /* /index.html 200 >> netlify-dist\_redirects
-
-echo [build] > netlify-dist\netlify.toml
-echo publish = "." >> netlify-dist\netlify.toml
-echo. >> netlify-dist\netlify.toml
-echo [[redirects]] >> netlify-dist\netlify.toml
-echo from = "/api/*" >> netlify-dist\netlify.toml
-echo to = "https://emotion-blind-box-api.onrender.com/:splat" >> netlify-dist\netlify.toml
-echo status = 200 >> netlify-dist\netlify.toml
-echo force = true >> netlify-dist\netlify.toml
-echo. >> netlify-dist\netlify.toml
-echo [[redirects]] >> netlify-dist\netlify.toml
-echo from = "/*" >> netlify-dist\netlify.toml
-echo to = "/index.html" >> netlify-dist\netlify.toml
-echo status = 200 >> netlify-dist\netlify.toml
-
-echo 4. 打开Netlify Drop页面...
-start https://app.netlify.com/drop
-
+echo ✓ Node.js已安装
 echo.
-echo 准备完成！
-echo 请将 netlify-dist 文件夹中的所有文件拖拽到打开的页面中
+
+echo 步骤2: 安装依赖...
+cd client
+call npm install
 echo.
-echo 注意：您需要先将后端部署到Render或其他服务
-echo 然后修改 netlify-dist\_redirects 和 netlify-dist\netlify.toml 文件中的API地址
+
+echo 步骤3: 构建前端项目...
+call npx vite build
+if %errorlevel% neq 0 (
+    echo 构建失败，尝试替代构建方法...
+    call npx vite build --mode production
+)
+echo.
+
+echo 步骤4: 检查构建结果...
+if not exist "dist" (
+    echo 错误: 未找到dist目录，构建可能失败
+    pause
+    exit /b 1
+)
+echo ✓ 前端构建完成
+echo.
+
+echo 步骤5: 准备部署文件...
+cd ..
+if exist "netlify-dist" (
+    rd /s /q "netlify-dist"
+)
+xcopy /E /I client netlify-dist
+echo.
+
+echo ========================================
+echo  构建完成！现在可以部署到Netlify了
+echo ========================================
+echo.
+echo 方法1 (推荐): 拖拽部署
+echo 1. 访问 https://app.netlify.com/drop
+echo 2. 将 netlify-dist 文件夹拖拽到页面中
+echo.
+echo 方法2: 命令行部署
+echo 1. 安装Netlify CLI: npm install -g netlify-cli
+echo 2. 运行: cd netlify-dist && netlify deploy --prod --dir=.
+echo.
+echo 部署完成后，请记得:
+echo - 如果部署了后端，需要更新 client/src/services/api.ts 中的API URL
+echo - 测试网站所有功能是否正常工作
 echo.
 pause
