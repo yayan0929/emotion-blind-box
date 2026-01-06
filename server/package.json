@@ -4,6 +4,7 @@
   "description": "大学生情绪盲盒交换站 - 后端API服务",
   "main": "dist/index.js",
   "scripts": {
+    "prestart": "npm install --production=false",
     "dev": "tsx watch src/index.ts",
     "build": "prisma generate",
     "start": "ts-node src/index.ts",
