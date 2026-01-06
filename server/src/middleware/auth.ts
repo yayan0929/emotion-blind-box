@@ -88,7 +88,7 @@ export const adminMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const user = (req as any).user
+    const user = req.user
     
     if (!user || user.role !== 'ADMIN' && user.role !== 'admin') {
       return res.status(403).json({
