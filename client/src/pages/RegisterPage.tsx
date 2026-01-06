@@ -19,15 +19,11 @@ interface RegisterForm {
   grade?: string
   isAnonymous: boolean
   anonymousName: string
-  verificationCode: string
 }
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate()
   const { register: authRegister, isLoading } = useAuth()
-  const [codeSent, setCodeSent] = useState(false)
-  const [countdown, setCountdown] = useState(0)
-  const [sendingCode, setSendingCode] = useState(false)
   
   const {
     register,
@@ -38,37 +34,6 @@ export const RegisterPage: React.FC = () => {
 
   const phone = watch('phone')
   const isAnonymous = watch('isAnonymous')
-
-  // 倒计时逻辑
-  React.useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
-      return () => clearTimeout(timer)
-    }
-  }, [countdown])
-
-  // 发送验证码
-  const handleSendCode = async () => {
-    if (!phone || !/^1[3-9]\d{9}$/.test(phone)) {
-      alert('请输入有效的手机号')
-      return
-    }
-
-    setSendingCode(true)
-    try {
-      const response = await authService.sendVerificationCode(phone, 'REGISTER')
-      if (response.success) {
-        setCodeSent(true)
-        setCountdown(60) // 60秒倒计时
-      } else {
-        alert(response.message)
-      }
-    } catch (error: any) {
-      alert(error.message || '发送验证码失败')
-    } finally {
-      setSendingCode(false)
-    }
-  }
 
   // 注册提交
   const onSubmit = async (data: RegisterForm) => {
@@ -87,8 +52,7 @@ export const RegisterPage: React.FC = () => {
         school: data.school,
         grade: data.grade,
         isAnonymous: data.isAnonymous,
-        anonymousName: data.anonymousName,
-        verificationCode: data.verificationCode
+        anonymousName: data.anonymousName
       })
       
       if (result.success) {
@@ -179,49 +143,19 @@ export const RegisterPage: React.FC = () => {
               />
 
               {/* 手机号 */}
-              <div className="flex space-x-2">
-                <Input
-                  id="phone"
-                  label="手机号"
-                  type="tel"
-                  placeholder="请输入手机号"
-                  {...register('phone', {
-                    required: '请输入手机号',
-                    pattern: {
-                      value: /^1[3-9]\d{9}$/,
-                      message: '请输入有效的手机号'
-                    }
-                  })}
-                  error={errors.phone?.message}
-                  containerClassName="flex-1"
-                />
-                <div className="flex items-end">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleSendCode}
-                    disabled={!phone || !/^1[3-9]\d{9}$/.test(phone) || countdown > 0 || sendingCode}
-                    loading={sendingCode}
-                  >
-                    {countdown > 0 ? `${countdown}s` : codeSent ? '重新发送' : '获取验证码'}
-                  </Button>
-                </div>
-              </div>
-
-              {/* 验证码 */}
               <Input
-                id="verificationCode"
-                label="验证码"
-                type="text"
-                placeholder="请输入验证码"
-                {...register('verificationCode', {
-                  required: '请输入验证码',
+                id="phone"
+                label="手机号"
+                type="tel"
+                placeholder="请输入手机号"
+                {...register('phone', {
+                  required: '请输入手机号',
                   pattern: {
-                    value: /^\d{6}$/,
-                    message: '验证码必须是6位数字'
+                    value: /^1[3-9]\d{9}$/,
+                    message: '请输入有效的手机号'
                   }
                 })}
-                error={errors.verificationCode?.message}
+                error={errors.phone?.message}
               />
 
               {/* 学号（可选） */}

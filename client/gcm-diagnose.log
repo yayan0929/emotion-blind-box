@@ -1,0 +1,210 @@
+﻿Diagnose log at 2026-01-06T16:45:00Z
+
+AppPath: D:\Git\mingw64\bin\git-credential-manager.exe
+InstallDir: D:\Git\mingw64\bin\
+Version: 2.6.1+786ab03440ddc82e807a97c0e540f5247e44cec6
+
+------------
+Diagnostic: Environment
+Skipped: False
+Success: True
+Exception: None
+Log:
+OSType: Windows
+OSVersion: 10.0 (build 26200)
+Reading environment variables... OK
+ Variables:
+HOMEPATH=\Users\HP
+DriverData=C:\Windows\System32\Drivers\DriverData
+COMPUTERNAME=LAPTOP-7RG91MPS
+MSYSTEM=MINGW64
+isArchMatched=1
+OneDrive=C:\Users\HP\OneDrive
+SAFE_RM_AUTO_ADD_TEMP=1
+RegionCode=APJ
+LANG=zh_CN.UTF-8
+TMP=C:\Users\HP\AppData\Local\Temp
+HOME=C:\Users\HP
+PROCESSOR_REVISION=b701
+USERDOMAIN_ROAMINGPROFILE=LAPTOP-7RG91MPS
+PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL
+TERM_PRODUCT=Trae
+GIT_ASKPASS=d:\Trae CN\resources\app\extensions\git\dist\askpass.sh
+GIT_EXEC_PATH=D:/Git/mingw64/libexec/git-core
+TEMP=C:\Users\HP\AppData\Local\Temp
+LOCALAPPDATA=C:\Users\HP\AppData\Local
+PUBLIC=C:\Users\Public
+EFC_31520_1592913036=1
+TERM=xterm-256color
+PROCESSOR_IDENTIFIER=Intel64 Family 6 Model 183 Stepping 1, GenuineIntel
+COLORTERM=truecolor
+USERDOMAIN=LAPTOP-7RG91MPS
+ProgramFiles(x86)=C:\Program Files (x86)
+platformcode=M7
+SAFE_RM_SOURCE_FLAG=c:\Users\HP\AppData\Local\Temp\safe-rm-source-flag-80c6f9f0-604a-4681-a024-8e6f001bbcca
+Path=D:/Git/mingw64/libexec/git-core;D:\Git\mingw64\bin;D:\Git\usr\bin;C:\Users\HP\bin;c:\Users\HP\.trae-cn\sdks\workspaces\f26df417\versions\node\current;c:\Users\HP\.trae-cn\sdks\versions\node\current;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA App\NvDLISR;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;C:\Program Files\HP\OMEN-Broadcast\Common;C:\Program Files\dotnet\;D:\HRAppStoreDownload\;D:\Git\cmd;D:\Git\Git\cmd;C:\Users\HP\AppData\Local\Microsoft\WindowsApps;D:\软件\CodeBuddy CN\bin;C:\Users\HP\.dotnet\tools;C:\Users\HP\AppData\Roaming\npm
+AI_AGENT=TRAE
+TERM_PROGRAM=vscode
+PROCESSOR_LEVEL=6
+AHA_CHROME_CRASHPAD_PIPE_NAME=\\.\pipe\crashpad_32960_CMTYLAWDQRPNTAKS
+TMPDIR=C:\Users\HP\AppData\Local\Temp
+VSCODE_GIT_ASKPASS_EXTRA_ARGS=
+VSCODE_GIT_ASKPASS_NODE=D:\Trae CN\Trae CN.exe
+TERM_PROGRAM_VERSION=1.104.3
+VSCODE_GIT_ASKPASS_MAIN=d:\Trae CN\resources\app\extensions\git\dist\askpass-main.js
+PSModulePath=C:\Users\HP\Documents\WindowsPowerShell\Modules;C:\Program Files\WindowsPowerShell\Modules;C:\windows\system32\WindowsPowerShell\v1.0\Modules
+NUMBER_OF_PROCESSORS=24
+CommonProgramFiles=C:\Program Files (x86)\Common Files
+VSCODE_INJECTION=1
+VSCODE_NONCE=3a6fe75e-d240-477c-8b81-ec0b1f9542fc
+SAFE_RM_ALLOWED_PATH=c:\Users\HP\CodeBuddy\239025009
+PLINK_PROTOCOL=ssh
+ProgramData=C:\ProgramData
+ProgramW6432=C:\Program Files
+VSCODE_GIT_IPC_HANDLE=\\.\pipe\vscode-git-0d4e9215dd-sock
+ProgramFiles=C:\Program Files (x86)
+SAFE_RM_PROTECTION_FLAG=c:\Users\HP\AppData\Local\Temp\safe-rm-protection-flag-b6b10f8d-1e62-40cc-b777-6e21284e1a89
+GIT_TRACE2_PARENT_SID=e32a8903-c600-4079-b4c1-cefe707b7b23
+TRAE_SANDBOX_SOURCE_FLAG_PATH=c:\Users\HP\AppData\Local\Temp\sandbox-source-flag-ec39fc51-691d-4230-9051-8872b9a9aac5
+TRAE_AI_SHELL_ID=4
+OnlineServices=Online Services
+SystemRoot=C:\windows
+ORIGINAL_XDG_CURRENT_DESKTOP=undefined
+SESSIONNAME=Console
+SAFE_RM_DENIED_PATH=c:\Users\HP\CodeBuddy\239025009\.vscode;c:\Users\HP\CodeBuddy\239025009\.trae;c:\Users\HP\CodeBuddy\239025009\.git
+VSCODE_STABLE=1
+CommonProgramW6432=C:\Program Files\Common Files
+LOGONSERVER=\\LAPTOP-7RG91MPS
+USERPROFILE=C:\Users\HP
+TRAE_SANDBOX_STORAGE_PATH=C:\Users\HP\AppData\Roaming\Trae CN\ModularData\ai-agent\sandbox
+CommonProgramFiles(x86)=C:\Program Files (x86)\Common Files
+APPDATA=C:\Users\HP\AppData\Roaming
+HOMEDRIVE=C:
+TRAE_SANDBOX_CLI_PATH=d:\Trae CN\resources\app\modules\sandbox\trae-sandbox.exe
+TRAE_SANDBOX_CONFIG_NAME=695cf9d1fb4a8df4645ae564
+VSCODE_ENV_PREPEND=PATH=c\x3a\\Users\\HP\\.trae-cn\\sdks\\workspaces\\f26df417\\versions\\node\\current;c\x3a\\Users\\HP\\.trae-cn\\sdks\\versions\\node\\current;
+USERNAME=HP
+PROCESSOR_ARCHITEW6432=AMD64
+PROCESSOR_ARCHITECTURE=x86
+OS=Windows_NT
+ComSpec=C:\windows\system32\cmd.exe
+SystemDrive=C:
+windir=C:\windows
+OneDriveConsumer=C:\Users\HP\OneDrive
+ALLUSERSPROFILE=C:\ProgramData
+
+
+------------
+Diagnostic: File system
+Skipped: False
+Success: True
+Exception: None
+Log:
+Temporary directory is 'C:\Users\HP\AppData\Local\Temp\'...
+Checking basic file I/O...
+Writing to temporary file 'C:\Users\HP\AppData\Local\Temp\6caa45d5831e5886efc5fbd7'... OK
+Reading from temporary file 'C:\Users\HP\AppData\Local\Temp\6caa45d5831e5886efc5fbd7'... OK
+Deleting temporary file 'C:\Users\HP\AppData\Local\Temp\6caa45d5831e5886efc5fbd7'... OK
+Testing IFileSystem instance...
+UserHomePath: C:\Users\HP
+UserDataDirectoryPath: C:\Users\HP\.gcm
+GetCurrentDirectory(): C:\Users\HP\CodeBuddy\239025009\client
+
+------------
+Diagnostic: Networking
+Skipped: False
+Success: True
+Exception: None
+Log:
+Checking networking and HTTP stack...
+Creating HTTP client... OK
+IsNetworkAvailable: True
+Sending HEAD request to http://example.com...Sending HEAD request to https://example.com... OK
+ OK
+Acquiring free TCP port... OK
+Testing local HTTP loopback connections...
+Creating new HTTP listener for http://localhost:60599/... OK
+Waiting for loopback connection... OK
+Writing response... OK
+Waiting for response data... OK
+Loopback connection data OK
+
+------------
+Diagnostic: Git
+Skipped: False
+Success: True
+Exception: None
+Log:
+Getting Git version... OK
+Git version is '2.52.0.windows.1'
+Locating current repository...Git repository at 'C:/Users/HP/CodeBuddy/239025009/.git'
+ OK
+Listing all Git configuration... OK
+Git configuration:
+file:D:/Git/etc/gitconfig	diff.astextplain.textconv=astextplain
+file:D:/Git/etc/gitconfig	filter.lfs.clean=git-lfs clean -- %f
+file:D:/Git/etc/gitconfig	filter.lfs.smudge=git-lfs smudge -- %f
+file:D:/Git/etc/gitconfig	filter.lfs.process=git-lfs filter-process
+file:D:/Git/etc/gitconfig	filter.lfs.required=true
+file:D:/Git/etc/gitconfig	http.sslbackend=schannel
+file:D:/Git/etc/gitconfig	core.autocrlf=true
+file:D:/Git/etc/gitconfig	core.fscache=true
+file:D:/Git/etc/gitconfig	core.symlinks=false
+file:D:/Git/etc/gitconfig	pull.rebase=false
+file:D:/Git/etc/gitconfig	credential.helper=manager
+file:D:/Git/etc/gitconfig	credential.https://dev.azure.com.usehttppath=true
+file:D:/Git/etc/gitconfig	init.defaultbranch=master
+file:C:/Users/HP/.gitconfig	core.autocrlf=true
+file:C:/Users/HP/.gitconfig	user.name=yy
+file:C:/Users/HP/.gitconfig	user.email=3135517271@qq.com
+file:.git/config	core.repositoryformatversion=0
+file:.git/config	core.filemode=false
+file:.git/config	core.bare=false
+file:.git/config	core.logallrefupdates=true
+file:.git/config	core.symlinks=false
+file:.git/config	core.ignorecase=true
+file:.git/config	remote.origin.url=https://github.com/yayan0929/emotion-blind-box.git
+file:.git/config	remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+file:.git/config	branch.master.remote=origin
+file:.git/config	branch.master.merge=refs/heads/main
+file:.git/config	branch.master.vscode-merge-base=origin/main
+file:.git/config	branch.main.remote=origin
+file:.git/config	branch.main.merge=refs/heads/main
+file:.git/config	branch.main.vscode-merge-base=origin/main
+
+
+------------
+Diagnostic: Credential storage
+Skipped: False
+Success: True
+Exception: None
+Log:
+ICredentialStore instance is of type: CredentialStore
+Writing test credential... OK
+Reading test credential... OK
+Deleting test credential... OK
+
+------------
+Diagnostic: Microsoft authentication (AAD/MSA)
+Skipped: False
+Success: True
+Exception: None
+Log:
+Broker is not enabled.
+Flow type is: Auto
+Gathering MSAL token cache data... OK
+CacheDirectory: C:\Users\HP\AppData\Local\.IdentityService
+CacheFileName: msal.cache
+CacheFilePath: C:\Users\HP\AppData\Local\.IdentityService\msal.cache
+Creating cache helper... OK
+Verifying MSAL token cache persistence... OK
+
+------------
+Diagnostic: GitHub API
+Skipped: False
+Success: True
+Exception: None
+Log:
+Using 'https://github.com/' as API target.
+Querying '/meta' endpoint... OK
+
