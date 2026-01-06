@@ -50,23 +50,33 @@ export const useAuth = () => {
 
   const handleLogin = async (username: string, password: string) => {
     setLoading(true)
+    console.log('handleLogin: 开始登录', { username })
     try {
       const response = await authService.login({ phone: username, password })
+      console.log('handleLogin: API响应', response)
+      
       if (response.success && response.data) {
         // 处理后端返回的数据结构
         const { user, tokens } = response.data
         const accessToken = tokens?.accessToken
         const refreshTokenValue = tokens?.refreshToken
         
+        console.log('handleLogin: 解析数据', { user, accessToken, refreshTokenValue })
+        
         if (user && accessToken) {
+          console.log('handleLogin: 调用login函数')
           login(user, accessToken, refreshTokenValue)
+          console.log('handleLogin: login函数调用完成')
           return { success: true }
         } else {
+          console.error('handleLogin: 数据格式错误', { user, accessToken })
           return { success: false, message: '登录响应数据格式错误' }
         }
       }
+      console.log('handleLogin: API返回失败', response.message)
       return { success: false, message: response.message || '登录失败' }
     } catch (error: any) {
+      console.error('handleLogin: 异常', error)
       return { success: false, message: error.message || '登录失败' }
     } finally {
       setLoading(false)

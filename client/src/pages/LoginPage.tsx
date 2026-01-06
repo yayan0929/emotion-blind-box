@@ -66,18 +66,24 @@ export const LoginPage: React.FC = () => {
 
   // 登录提交
   const onSubmit = async (data: LoginForm) => {
+    console.log('开始登录...', data)
     try {
       const result = await authLogin(
         data.phone,
         data.loginType === 'password' ? data.password : data.verificationCode
       )
       
+      console.log('登录结果:', result)
+      
       if (result.success) {
+        console.log('登录成功，准备跳转到首页')
         navigate('/')
       } else {
+        console.log('登录失败:', result.message)
         alert(result.message)
       }
     } catch (error) {
+      console.error('登录异常:', error)
       alert('登录失败，请重试')
     }
   }
