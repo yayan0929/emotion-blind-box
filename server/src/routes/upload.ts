@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { Request, Response, NextFunction } from 'express'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
@@ -38,7 +38,7 @@ const storage = multer.diskStorage({
 })
 
 // 文件过滤器
-const fileFilter = (req: any, file: Express.Multer.File, cb: any) => {
+const fileFilter = (req: Request, file: any, cb: any) => {
   // 允许的文件类型
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
   
@@ -90,7 +90,7 @@ router.post('/single', authMiddleware, upload.single('file'), async (req, res, n
 // 多个文件上传
 router.post('/multiple', authMiddleware, upload.array('files', 5), async (req, res, next) => {
   try {
-    const files = req.files as Express.Multer.File[]
+    const files = req.files as any[]
     
     if (!files || files.length === 0) {
       return res.status(400).json({
