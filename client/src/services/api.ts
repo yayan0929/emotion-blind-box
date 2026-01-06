@@ -9,7 +9,7 @@ const getBaseURL = () => {
   }
   
   // 生产环境使用部署的后端服务URL
-  return 'https://emotion-box-api.onrender.com/api'; // 部署后需要替换为实际的后端URL
+  return import.meta.env.VITE_API_BASE_URL || 'https://emotion-box-api.onrender.com/api';
 };
 
 // 创建axios实例
