@@ -4,7 +4,7 @@
     "description":  "大学生情绪盲盒交换站 - 后端API服务",
     "main":  "dist/index.js",
     "scripts":  {
-                    "prestart":  "npm install --production=false && npm run build && npm run db:push",
+                    "prestart":  "npm install --production=false && npm run build && npm run db:push && npm run db:seed",
                     "dev":  "tsx watch src/index.ts",
                     "build": "tsc && prisma generate",
                     "start": "node dist/index.js",

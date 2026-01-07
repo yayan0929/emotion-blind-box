@@ -430,6 +430,44 @@ router.put('/:id/status', authMiddleware, adminMiddleware, async (req, res, next
   }
 })
 
+// 管理员修改用户角色
+router.put('/:id/role', authMiddleware, adminMiddleware, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { role } = req.body
+
+    if (!role || !['USER', 'ADMIN'].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: '角色必须是 USER 或 ADMIN'
+      })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id }
+    })
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: '用户不存在'
+      })
+    }
+
+    await prisma.user.update({
+      where: { id },
+      data: { role: role as 'USER' | 'ADMIN' }
+    })
+
+    res.json({
+      success: true,
+      message: `用户角色已修改为${role === 'ADMIN' ? '管理员' : '普通用户'}`
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 // 用户注销账号
 router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
