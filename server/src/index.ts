@@ -38,6 +38,12 @@ if (process.env.ALLOWED_ORIGINS) {
   allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(','));
 }
 
+// 生产环境如果没有配置FRONTEND_URL，允许所有来源（临时方案）
+if (process.env.NODE_ENV === 'production' && (!process.env.FRONTEND_URL || process.env.FRONTEND_URL === '')) {
+  console.warn('⚠️  警告：未配置 FRONTEND_URL 环境变量，允许所有来源（不安全，仅用于测试）');
+  allowedOrigins.push('*');
+}
+
 app.use(cors({
   origin: allowedOrigins,
   credentials: true
