@@ -69,7 +69,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-4">
               {user ? (
                 <div className="flex items-center space-x-4">
-                  {user.role === 'admin' && (
+                  {user.role === 'ADMIN' && (
                     <Button
                       variant="outline"
                       size="sm"
@@ -167,7 +167,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   {item.name}
                 </Link>
               ))}
-              {user?.role === 'admin' && (
+              {user?.role === 'ADMIN' && (
                 <Link
                   to="/admin"
                   className="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50"
