@@ -17,7 +17,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // 调试：打印用户角色
   useEffect(() => {
-    if (user !== null) {
+    if (user) {
       console.log('Layout - user.role:', user.role)
     }
   }, [user])
