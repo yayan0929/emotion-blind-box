@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from './ui/Button'
@@ -14,6 +14,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // 调试：打印用户角色
+  useEffect(() => {
+    if (user) {
+      console.log('Layout - user.role:', user.role)
+    }
+  }, [user])
 
   const handleLogout = () => {
     logout()
@@ -69,7 +76,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-4">
               {user ? (
                 <div className="flex items-center space-x-4">
-                  {console.log('Layout - user.role:', user.role)}
                   {user.role === 'ADMIN' && (
                     <Button
                       variant="outline"

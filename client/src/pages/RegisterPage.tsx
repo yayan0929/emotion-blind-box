@@ -1,13 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { useAuth } from '@/hooks/useAuth'
-import { authService } from '@/services/authService'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
-import { Textarea } from '@/components/ui/Textarea'
-import { cn } from '@/lib/utils'
 
 interface RegisterForm {
   username: string
@@ -28,12 +25,8 @@ export const RegisterPage: React.FC = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors }
   } = useForm<RegisterForm>()
-
-  const phone = watch('phone')
-  const isAnonymous = watch('isAnonymous')
 
   // 注册提交
   const onSubmit = async (data: RegisterForm) => {
