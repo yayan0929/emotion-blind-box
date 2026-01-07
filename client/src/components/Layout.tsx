@@ -69,6 +69,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-4">
               {user ? (
                 <div className="flex items-center space-x-4">
+                  {console.log('Layout - user.role:', user.role)}
                   {user.role === 'ADMIN' && (
                     <Button
                       variant="outline"
