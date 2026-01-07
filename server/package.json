@@ -4,10 +4,10 @@
     "description":  "大学生情绪盲盒交换站 - 后端API服务",
     "main":  "dist/index.js",
     "scripts":  {
-                    "prestart":  "npm install --production=false && npm run build",
+                    "prestart":  "npm install --production=false && npm run build && npm run db:migrate",
                     "dev":  "tsx watch src/index.ts",
                     "build": "tsc && prisma generate",
-                    "start":  "node dist/index.js",
+                    "start": "node dist/index.js",
                     "start:ts":  "ts-node src/index.ts",
                     "db:migrate":  "prisma migrate deploy",
                     "db:generate":  "prisma generate",
