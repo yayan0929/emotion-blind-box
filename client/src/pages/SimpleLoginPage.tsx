@@ -13,16 +13,28 @@ export const SimpleLoginPage: React.FC = () => {
     e.preventDefault()
     setError('')
     
+    console.log('=== 开始登录流程 ===')
+    console.log('用户名:', username)
+    console.log('密码:', password ? '***' : 'empty')
+    
     try {
       // 使用 useAuth 中的登录方法
       const result = await handleLogin(username, password)
       
+      console.log('=== 登录结果 ===')
+      console.log('result:', result)
+      console.log('result.success:', result.success)
+      console.log('result.message:', result.message)
+      
       if (result.success) {
+        console.log('登录成功，准备跳转到首页')
         navigate('/')
       } else {
+        console.error('登录失败:', result.message)
         setError(result.message || '登录失败')
       }
     } catch (err) {
+      console.error('登录异常:', err)
       setError('网络错误，请重试')
     }
   }
@@ -84,7 +96,7 @@ export const SimpleLoginPage: React.FC = () => {
         </div>
         
         <div className="mt-6 text-xs text-gray-500 text-center">
-          <p>管理员账号：13800138000 / 123456</p>
+          <p>管理员账号：13800000000 / admin123</p>
         </div>
       </div>
     </div>

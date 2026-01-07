@@ -1,0 +1,27 @@
+手动修复TypeScript编译问题的步骤：
+
+1. 打开命令提示符（Win+R，输入cmd，按回车）
+
+2. 导航到服务器目录：
+   cd /d c:/Users/HP/CodeBuddy/239025009/server
+
+3. 修改package.json的start脚本（复制以下命令并粘贴）：
+   powershell -Command "(Get-Content package.json | ConvertFrom-Json) | ForEach-Object { $_.scripts.start = 'ts-node --esm src/index.ts'; $_ } | ConvertTo-Json -Depth 10 | Set-Content package.json"
+
+4. 生成Prisma客户端：
+   npx prisma generate
+
+5. 返回项目根目录并提交修改：
+   cd /d c:/Users/HP/CodeBuddy/239025009
+   git add .
+   git commit -m "修复部署问题：使用ts-node --esm直接运行TypeScript文件"
+
+6. 推送到远程仓库：
+   git push origin master:main
+
+7. 登录Render控制台并重新部署项目：
+   - 访问 https://dashboard.render.com
+   - 找到您的项目
+   - 点击"Re-deploy"按钮
+
+如果任何步骤出现错误，请记录错误信息并告诉我。

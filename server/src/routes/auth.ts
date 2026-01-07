@@ -55,7 +55,7 @@ router.post('/register', async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 12)
 
     // 确定用户角色
-    const userRole = value.role === 'admin' ? 'admin' : 'user';
+    const userRole = value.role === 'admin' ? 'ADMIN' : 'USER';
     
     // 创建用户
     const newUser = await prisma.user.create({

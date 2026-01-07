@@ -24,6 +24,11 @@ export const useAuthStore = create<AuthState>()(
       isLoading: true, // 初始状态为加载中
       
       login: (user, token, refreshToken) => {
+        console.log('authStore.login: 开始设置状态')
+        console.log('authStore.login: user:', user)
+        console.log('authStore.login: token存在:', !!token)
+        console.log('authStore.login: refreshToken存在:', !!refreshToken)
+        
         set({
           user,
           token,
@@ -37,6 +42,19 @@ export const useAuthStore = create<AuthState>()(
         if (refreshToken) {
           localStorage.setItem('refreshToken', refreshToken)
         }
+        
+        console.log('authStore.login: 状态设置完成')
+        
+        // 验证状态是否正确设置
+        setTimeout(() => {
+          const state = get()
+          console.log('authStore.login: 验证状态', {
+            isAuthenticated: state.isAuthenticated,
+            hasUser: !!state.user,
+            hasToken: !!state.token,
+            userRole: state.user?.role
+          })
+        }, 50)
       },
       
       logout: () => {
